@@ -12,8 +12,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 public final class ServerTimeRestriction extends JavaPlugin {
-    private final String configPath = "config.yml";
-
     @Override
     public void onEnable() {
 
@@ -29,10 +27,11 @@ public final class ServerTimeRestriction extends JavaPlugin {
 
     private JoinRestrictionHandler loadRestrictionHandlerFromConfig() {
         JoinTimeCollection joinTimeCollection = new JoinTimeCollection();
+        String configPrefix = "restrictions.";
         for (int i = 0; i < 7; i++) {
             String weekdayName = WeekdayUtil.getWeekdayByIndex(i);
-            String restrictionPrefix = "restrictions." + weekdayName + ".";
-            if (!this.getConfig().contains("restrictions." + weekdayName)) {
+            String restrictionPrefix = configPrefix + weekdayName + ".";
+            if (!this.getConfig().contains(configPrefix + weekdayName)) {
                 this.getConfig().set(restrictionPrefix + "enabled", false);
                 this.getConfig().set(restrictionPrefix + "joinTimes", List.of("00_00-23_59"));
                 this.saveDefaultConfig();
@@ -50,18 +49,18 @@ public final class ServerTimeRestriction extends JavaPlugin {
             }
         }
         List<UUID> allowedPlayers = new ArrayList<>();
-        for (String s : this.getConfig().getStringList("allowedPlayers")) {
+        for (String s : this.getConfig().getStringList(configPrefix +"allowedPlayers")) {
             UUID uuid = UUID.fromString(s);
             allowedPlayers.add(uuid);
         }
 
         List<UUID> disableWhenPlayerIsOnline = new ArrayList<>();
-        for (String s : this.getConfig().getStringList("disableWhenPlayerIsOnline")) {
+        for (String s : this.getConfig().getStringList(configPrefix +"disableWhenPlayerIsOnline")) {
             UUID uuid = UUID.fromString(s);
             disableWhenPlayerIsOnline.add(uuid);
         }
 
-        boolean allowOps = this.getConfig().getBoolean("allowOps");
+        boolean allowOps = this.getConfig().getBoolean(configPrefix +"allowOps");
 
         return new JoinRestrictionHandler(this,allowedPlayers, disableWhenPlayerIsOnline, joinTimeCollection, allowOps);
     }
@@ -93,7 +92,9 @@ public final class ServerTimeRestriction extends JavaPlugin {
     private void startKickCheckScheduler(JoinRestrictionHandler joinRestrictionHandler) {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                joinRestrictionHandler.checkPlayerJoin(player);
+                if(joinRestrictionHandler.isNotAllowedToJoin(player)){
+                    player.kick(joinRestrictionHandler.getKickMessage());
+                }
             }
         }, 0, 20 * 120);
     }

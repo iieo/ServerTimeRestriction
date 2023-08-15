@@ -23,40 +23,39 @@ public class JoinRestrictionHandler {
         this.plugin = plugin;
     }
 
-    public void checkPlayerJoin(Player player) {
-        if (!isAllowedToJoin(player)) {
-            player.kick(Component.text(joinTimeCollection.getKickMessage()).color(TextColor.color(0xFF0000)));
+
+    public Component getKickMessage() {
+        return Component.text(joinTimeCollection.getKickMessage()).color(TextColor.color(0xFF0000));
+    }
+
+    public boolean isNotAllowedToJoin(Player player) {
+        if (joinTimeCollection.isAllowedToJoin() || (player.isOp() && allowOps) || allowedPlayers.contains(player.getUniqueId()) || disableWhenPlayersOnline.contains(player.getUniqueId())) {
+            return false;
         }
+        return Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).noneMatch(disableWhenPlayersOnline::contains);
     }
 
-    public boolean isAllowedToJoin(Player player) {
-        if (joinTimeCollection.isAllowedToJoin() || (player.isOp() && allowOps) || allowedPlayers.contains(player.getUniqueId())) {
-            return true;
-        }
-        return Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).anyMatch(disableWhenPlayersOnline::contains);
-    }
-
-    public void addDisableWhenOnlinePlayer(Player player) {
-        disableWhenPlayersOnline.add(player.getUniqueId());
-        plugin.getConfig().set("disableWhenPlayerIsOnline", disableWhenPlayersOnline.stream().map(UUID::toString));
+    public void addDisableWhenOnlinePlayer(UUID playerUUID) {
+        disableWhenPlayersOnline.add(playerUUID);
+        plugin.getConfig().set("restrictions.disableWhenPlayerIsOnline", disableWhenPlayersOnline.stream().map(UUID::toString).toArray(String[]::new));
         plugin.saveConfig();
     }
 
-    public void removeDisableWhenOnlinePlayer(Player player) {
-        disableWhenPlayersOnline.remove(player.getUniqueId());
-        plugin.getConfig().set("disableWhenPlayerIsOnline", disableWhenPlayersOnline.stream().map(UUID::toString));
+    public void removeDisableWhenOnlinePlayer(UUID playerUUID) {
+        disableWhenPlayersOnline.remove(playerUUID);
+        plugin.getConfig().set("restrictions.disableWhenPlayerIsOnline", disableWhenPlayersOnline.stream().map(UUID::toString).toArray(String[]::new));
         plugin.saveConfig();
     }
 
-    public void removeAllowedPlayer(Player player) {
-        allowedPlayers.remove(player.getUniqueId());
-        plugin.getConfig().set("allowedPlayers", allowedPlayers.stream().map(UUID::toString));
+    public void removeAllowedPlayer(UUID playerUUID) {
+        allowedPlayers.remove(playerUUID);
+        plugin.getConfig().set("restrictions.allowedPlayers", allowedPlayers.stream().map(UUID::toString).toArray(String[]::new));
         plugin.saveConfig();
     }
 
-    public void addAllowedPlayer(Player player) {
-        allowedPlayers.add(player.getUniqueId());
-        plugin.getConfig().set("allowedPlayers", allowedPlayers.stream().map(UUID::toString));
+    public void addAllowedPlayer(UUID playerUUID) {
+        allowedPlayers.add(playerUUID);
+        plugin.getConfig().set("restrictions.allowedPlayers", allowedPlayers.stream().map(UUID::toString).toArray(String[]::new));
         plugin.saveConfig();
     }
 }

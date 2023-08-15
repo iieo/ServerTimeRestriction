@@ -1,10 +1,7 @@
 restrictions:
   allowedPlayers:
-    - 123456789012345678
-    - 987654321098765432
   allowOps: true
   disableWhenPlayerIsOnline:
-    - 123456789012345678
   monday:
     enabled: true
   tuesday:
