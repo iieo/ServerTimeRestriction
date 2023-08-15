@@ -1,0 +1,17 @@
+name: ServerTimeRestriction
+version: '${project.version}'
+main: de.iieo.servertimerestriction.ServerTimeRestriction
+api-version: '1.20'
+author: iieo
+description: Allows playing only at certain times
+commands:
+  str:
+      description: Main command
+      usage: /<command>
+      aliases: [servertimerestriction]
+      permission: str.admin
+      permission-message: You don't have permission to use this command
+permissions:
+  str.admin:
+    description: Allows to use all commands
+    default: op

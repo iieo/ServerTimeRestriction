@@ -1,0 +1,31 @@
+restrictions:
+  allowedPlayers:
+    - 123456789012345678
+    - 987654321098765432
+  allowOps: true
+  disableWhenPlayerIsOnline:
+    - 123456789012345678
+  monday:
+    enabled: true
+  tuesday:
+    enabled: true
+  wednesday:
+    enabled: true
+  thursday:
+    enabled: true
+  friday:
+    enabled: true
+  saturday:
+    enabled: true
+    joinTimes:
+      - 20_15-01_00
+  sunday:
+    enabled: true
+    joinTimes:
+      - 20_15-00_30
+
+# enabled - whether the restriction is enabled
+# joinTimes - the time range in which the player can join the server
+# allowedPlayers - the list of players who are allowed to join the server at any time
+# allowOps - whether OPs are allowed to join the server at any time
+# disableWhenPlayerIsOnline - the list of players who, when online, disable the restriction
